@@ -48,11 +48,7 @@ def main():
             
             try:
                 # Show thinking indicator
-                print("\nThinking", end="")
-                for _ in range(3):
-                    time.sleep(0.3)
-                    print(".", end="", flush=True)
-                print("\n")
+                print("\nThinking (New Conversation)...\n")
                 
                 # Get response from agent
                 response = agent.process_message(user_message)

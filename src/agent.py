@@ -22,35 +22,18 @@ class PareAgent:
     def __init__(self):
         # Initialize lead data
         self.lead_data = {
-            "name": None,
-            "phone": None,
-            "email": None,
             "location": None,
             "requirement_type": None,
-            "city": None,
             "quantity": None,
-            "company_name": None
         }
+        
+        # Initialize conversation history
+        self.conversation_history = []
         
         # Create OpenAI agent
         self.agent = Agent(
             name="pare_assistant",
-            instructions="""
-            You are a helpful assistant for PARE India, a leading manufacturer of decorative surfaces for walls, ceilings, and facades.
-            
-            Follow these guidelines:
-            1. When customers ask about the company, provide information and ask about their requirements.
-            2. When customers ask about products, explain the options based on their interests (walls, ceilings, facades).
-            3. Capture lead information (location, requirement_type, quantity) in a conversational way.
-            4. Provide pricing information when asked.
-            5. Offer support options (callbacks, site visits) when appropriate.
-            6. Once customer has narrowed down the requirement, capture the lead information and set a callback and close the conversation.
-            7. Always be professional, helpful and enthusiastic.
-            8. Answer in language of the customer. 
-            9. Keep history of the conversation in the conversation_history variable.
-            
-            Remember to use the appropriate tools based on the customer's query.
-            """,
+            instructions=self.dynamic_instructions,
             tools=[
                 function_tool(self.tool_company_info),
                 function_tool(self.tool_product_info),
@@ -66,6 +49,29 @@ class PareAgent:
         self.last_brochure = None
         self.last_message = None
     
+    def add_to_history(self, role: str, content: str):
+        """Add a message to the conversation history."""
+        self.conversation_history.append({"role": role, "content": content})
+    
+    def dynamic_instructions(self, context, agent):
+        return f"""
+            You are a helpful assistant for PARE India, a leading manufacturer of decorative surfaces for walls, ceilings, and facades.
+            
+            Follow these guidelines:
+            1. When customers ask about the company, provide information and ask about their requirements.
+            2. When customers ask about products, explain the options based on their interests (walls, ceilings, facades).
+            3. Capture lead information (location, requirement_type, quantity) in a conversational way.
+            4. Provide pricing information when asked.
+            5. Offer support options (callbacks, site visits) when appropriate.
+            6. Once customer has narrowed down the requirement, capture the lead information and set a callback and close the conversation.
+            7. Always be professional, helpful and enthusiastic.
+            8. Keep in mind the context/history of the conversation in the CONVERSATION_HISTORY variable.
+
+            CONVERSATION_HISTORY: {self.conversation_history}
+            
+            Remember to use the appropriate tools based on the customer's query.
+        """
+
     # Tool definitions
     def tool_company_info(self) -> Dict:
         """Provide information about PARE India company."""
@@ -125,6 +131,13 @@ class PareAgent:
         result = get_pricing_info()
         # Store message for response processing
         self.last_message = result["message"]
+        
+        # After sharing pricing, try to capture lead if customer shows interest
+        has_required_fields = all(self.lead_data.get(field) for field in ["name", "phone"])
+        if not has_required_fields:
+            missing_field = "name" if not self.lead_data.get("name") else "phone"
+            result["message"] += f"\n\nTo provide a more personalized quote, could you please share your {missing_field}?"
+            self.last_message = result["message"]
         
         return {
             "message": result["message"],
@@ -187,5 +200,9 @@ class PareAgent:
         # If a tool was used and provided a message, use that instead of the model's response
         if self.last_message:
             response["response"] = self.last_message
+        
+        # Add to conversation history
+        self.add_to_history("user", user_message)
+        self.add_to_history("assistant", response["response"])
             
         return response 
