@@ -188,6 +188,13 @@ class PareAgent:
         self.last_brochure = None
         self.last_message = None
         
+        import asyncio
+        try:
+            asyncio.get_running_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+
         # Send message to agent
         result = Runner.run_sync(self.agent, user_message)
         
