@@ -14,6 +14,12 @@ st.set_page_config(
     layout="centered"
 )
 
+# st.markdown("""
+# <style>
+# [data-testid='stSidebar'] {display: none;}
+# </style>
+# """, unsafe_allow_html=True)
+
 # Initialize agent
 @st.cache_resource
 def get_agent():
@@ -21,8 +27,6 @@ def get_agent():
 
 # App title and description
 st.title("PARE India AI Assistant")
-st.markdown("#### Customer Support, Lead Generation & Product Information")
-st.markdown("---")
 
 # Initialize chat history in session state if it doesn't exist
 if "messages" not in st.session_state:
@@ -109,31 +113,31 @@ if user_input and agent_initialized:
             thinking_placeholder.error(f"Error: {str(e)}")
             st.error("Please make sure your OpenAI API key is valid and has access to the required models.")
 
-# Sidebar with information
-with st.sidebar:
-    st.title("About PARE India")
-    st.markdown("""
-    PARÉ is a leading manufacturer of innovative decorative surfaces for walls, 
-    ceilings, and facades. We serve both residential and commercial projects across India.
-    """)
+# # Sidebar with information
+# with st.sidebar:
+#     st.title("About PARE India")
+#     st.markdown("""
+#     PARÉ is a leading manufacturer of innovative decorative surfaces for walls, 
+#     ceilings, and facades. We serve both residential and commercial projects across India.
+#     """)
     
-    st.subheader("Product Categories")
-    st.markdown("""
-    - **Walls**: Linea, Pyramid, Arch
-    - **Ceilings**: Soffit, Duo, Louver
-    - **Facades**: Norma, Stretta
-    """)
+#     st.subheader("Product Categories")
+#     st.markdown("""
+#     - **Walls**: Linea, Pyramid, Arch
+#     - **Ceilings**: Soffit, Duo, Louver
+#     - **Facades**: Norma, Stretta
+#     """)
     
-    st.subheader("Pricing")
-    st.markdown("Our pricing starts from ₹195 - ₹350 per sq.ft., depending on the product and finish.")
+#     st.subheader("Pricing")
+#     st.markdown("Our pricing starts from ₹195 - ₹350 per sq.ft., depending on the product and finish.")
     
-    # About the technology
-    st.subheader("Technology")
-    st.markdown("Built with OpenAI Agents SDK for more natural conversations.")
+#     # About the technology
+#     st.subheader("Technology")
+#     st.markdown("Built with OpenAI Agents SDK for more natural conversations.")
     
-    # Add a reset button to clear the conversation
-    if st.button("Reset Conversation"):
-        st.session_state.messages = [
-            {"role": "assistant", "content": "Hello! Welcome to PARE India. I'm your virtual assistant. How can I help you today?"}
-        ]
-        st.rerun() 
+#     # Add a reset button to clear the conversation
+#     if st.button("Reset Conversation"):
+#         st.session_state.messages = [
+#             {"role": "assistant", "content": "Hello! Welcome to PARE India. I'm your virtual assistant. How can I help you today?"}
+#         ]
+#         st.rerun() 
