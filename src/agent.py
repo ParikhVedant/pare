@@ -64,8 +64,10 @@ class PareAgent:
             4. Provide pricing information when asked.
             5. Offer support options (callbacks, site visits) when appropriate.
             6. Once customer has narrowed down the requirement, capture the lead information and set a callback and close the conversation.
-            7. Always be professional, helpful and enthusiastic.
-            8. Keep in mind the context/history of the conversation in the CONVERSATION_HISTORY variable.
+            7. Subtly lead to capture the lead information and closing the conversation.
+            8. Always be professional, helpful and enthusiastic.
+            9. Respond in the language of the customer. (normall English, Hindi or Hinglish)
+            10. Keep in mind the context/history of the conversation in the CONVERSATION_HISTORY variable.
 
             CONVERSATION_HISTORY: {self.conversation_history}
             
@@ -118,6 +120,7 @@ class PareAgent:
         # Check if lead capture is complete
         if result.get("is_complete", False):
             send_lead_to_crm(self.lead_data)
+            self.last_message = "Thank you for providing your details. Someone will be in touch with you shortly."
         
         return {
             "message": result["message"],
